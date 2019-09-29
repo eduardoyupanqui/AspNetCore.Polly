@@ -3,12 +3,19 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using Polly;
+using System.Threading.Tasks;
 
 namespace ApiClient
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            MainAsync(args).GetAwaiter().GetResult();
+            Console.ReadLine();
+        }
+
+        static async Task MainAsync(string[] args)
         {
             var cbrConfig = new CBR
             {
@@ -25,9 +32,9 @@ namespace ApiClient
                 .AddHttpClient<IDemoWebApiClient, DemoWebApiClient>()
                 .ConfigureHttpClient(c =>
                 {
-                        c.BaseAddress = new Uri("http://localhost:5000/");
-                        //c.DefaultRequestHeaders.Add("Accept", "application/json");
-                        c.DefaultRequestHeaders.Accept.Clear();
+                    c.BaseAddress = new Uri("http://localhost:5000/");
+                    //c.DefaultRequestHeaders.Add("Accept", "application/json");
+                    c.DefaultRequestHeaders.Accept.Clear();
                     c.MaxResponseContentBufferSize = int.MaxValue;
 
                 })
@@ -43,13 +50,27 @@ namespace ApiClient
 
             var webApiClient = serviceProvider.GetService<IDemoWebApiClient>();
 
-
-            var resultado = webApiClient.GetConfiguracion();
-
-
-            var xx = JsonConvert.SerializeObject(resultado);
-            Console.WriteLine(xx);
-            Console.ReadLine();
+            int counts = 1;
+            Console.WriteLine("Comenzando Pruebas");
+            while (counts < 5)
+            {
+                Console.WriteLine($"Prueba Numero: {counts}");
+                try
+                {
+                    var resultado = await webApiClient.GetConfiguracionAsync();
+                    Console.WriteLine(JsonConvert.SerializeObject(resultado));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Tipo de Exception: Type is {0}", ex.GetType());
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine("Tipo de InnerException: Type is {0}", ex.InnerException.GetType());
+                    }
+                }
+                counts++;
+            }
+            Console.WriteLine("Finish");
         }
     }
 

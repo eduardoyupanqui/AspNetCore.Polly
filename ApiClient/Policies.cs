@@ -28,9 +28,9 @@ namespace ApiClient
         {
             return HttpPolicyExtensions
                     .HandleTransientHttpError()
-                    .CircuitBreakerAsync(cbr.ExceptionsAllowedBeforeBreaking, TimeSpan.FromSeconds(cbr.DurationOfBreak))
+                    .CircuitBreakerAsync(cbr.ExceptionsAllowedBeforeBreaking, TimeSpan.FromMinutes(cbr.DurationOfBreak))
                     //.CircuitBreakerAsync<HttpResponseMessage>(cbr.ExceptionsAllowedBeforeBreaking,
-                    //                                          TimeSpan.FromSeconds(cbr.DurationOfBreak),
+                    //                                          TimeSpan.FromMinutes(cbr.DurationOfBreak),
                     //                                          onBreak: onBreak, onReset: onReset)
                     ;
         }

@@ -28,6 +28,11 @@ namespace ApiClient
             return resultado;
         }
 
+        public Task<IEnumerable<object>> GetConfiguracionAsync()
+        {
+            return httpClient.InvokeWebApiAsync<IEnumerable<object>>(HttpMethod.Get, "/api/Values");
+        }
+
         public void Prueba() {
             var xxx = httpClient.GetAsync("api/Values");
         }
