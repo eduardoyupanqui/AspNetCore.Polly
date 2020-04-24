@@ -9,38 +9,21 @@ namespace HttpHelper.Invoke
 {
     public static class HttpResponseMessageExtensions
     {
-        public static HttpResponseMessage EnsureSuccessStatusCode(this HttpResponseMessage response)
+        //https://github.com/microsoft/referencesource/blob/master/System/net/System/Net/Http/HttpResponseMessage.cs#L142
+        public static HttpResponseMessage EnsureSuccessStatusCodeCustom(this HttpResponseMessage response)
         {
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                return response;
+                string content = response.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
+                // Disposing the content should help users: If users call EnsureSuccessStatusCode(), an exception is
+                // thrown if the response status code is != 2xx. I.e. the behavior is similar to a failed request (e.g.
+                // connection failure). Users don't expect to dispose the content in this case: If an exception is 
+                // thrown, the object is responsible fore cleaning up its state.
+                if (response.Content != null)
+                    response.Content.Dispose();
+                throw new HttpResponseException(response.StatusCode, response.ReasonPhrase, content);
             }
-
-            //var content = await response.Content.ReadAsStringAsync();
-            var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
-            if (response.Content != null)
-                response.Content.Dispose();
-            
-            
-            throw new HttpResponseException(response.StatusCode, response.ReasonPhrase, content);
-        }
-
-        public static async Task EnsureSuccessStatusCodeAsync(this HttpResponseMessage response)
-        {
-            if (response.IsSuccessStatusCode)
-            {
-                return;
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            //var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
-            if (response.Content != null)
-                response.Content.Dispose();
-
-
-            throw new HttpResponseException(response.StatusCode, response.ReasonPhrase, content);
+            return response;
         }
     }
 }

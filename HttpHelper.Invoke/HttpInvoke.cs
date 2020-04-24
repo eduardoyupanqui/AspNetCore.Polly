@@ -40,7 +40,7 @@ namespace HttpHelper.Invoke
 
             using (HttpResponseMessage response = await client.SendAsync(request, cancellationToken))
             {
-                await response.EnsureSuccessStatusCodeAsync();
+                response.EnsureSuccessStatusCodeCustom();
                 return await response.Content.ReadAsAsync<T>();
             }
         }
