@@ -7,6 +7,7 @@ namespace WebApi.Configs
 {
     public class HostingConfiguration
     {
+        public int TimeSleep { get; set; }
         public bool Error404 { get; set; }
         public bool Error400 { get; set; }
         public bool Error401 { get; set; }

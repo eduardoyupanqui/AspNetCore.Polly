@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<object>> Get()
         {
+           Thread.Sleep(_snapshotOptions.TimeSleep);
             if (_snapshotOptions.Error404)
             {
                 _logger.LogInformation($"La peticion lanzo el error {0}", nameof(_snapshotOptions.Error404));

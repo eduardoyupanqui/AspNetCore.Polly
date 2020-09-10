@@ -17,11 +17,15 @@ namespace ApiClient
         {
             return HttpPolicyExtensions
                     .HandleTransientHttpError()
+                    //.Or<Polly.Timeout.TimeoutRejectedException>() // ** ADDED **
+                    //.Or<System.Net.Sockets.SocketException>() // ** ADDED **
                     .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                     //.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.BadRequest)
                     //.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.Forbidden)
                     //.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    .WaitAndRetryAsync(cbr.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(cbr.SleepDuration, retryAttempt)));
+                    .WaitAndRetryAsync(cbr.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(cbr.SleepDuration, retryAttempt)))
+                    //.WrapAsync(Policy.TimeoutAsync(TimeSpan.FromSeconds(20)))
+                    ;
         }
 
         internal static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(CBR cbr)

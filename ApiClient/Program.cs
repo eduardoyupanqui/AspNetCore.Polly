@@ -32,10 +32,12 @@ namespace ApiClient
                 .AddHttpClient<IDemoWebApiClient, DemoWebApiClient>()
                 .ConfigureHttpClient(c =>
                 {
-                    c.BaseAddress = new Uri("http://localhost:5000/");
+                    c.BaseAddress = new Uri("https://localhost:5001/");
                     //c.DefaultRequestHeaders.Add("Accept", "application/json");
                     c.DefaultRequestHeaders.Accept.Clear();
                     c.MaxResponseContentBufferSize = int.MaxValue;
+
+                    //c.Timeout = TimeSpan.FromSeconds(1000);
 
                 })
                 .SetHandlerLifetime(TimeSpan.FromMinutes(cbrConfig.HandlerLifetime))
